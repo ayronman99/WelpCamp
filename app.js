@@ -30,6 +30,7 @@ const userRoutes = require('./routes/forUsers');
 
 //INITIATION MONGODB
 const dbURL = atlasDB || 'mongodb://localhost:27017/yelp-camp'
+// const dbURL = 'mongodb://localhost:27017/yelp-camp';
 mongoose.connect(dbURL);
 
 const db = mongoose.connection;
