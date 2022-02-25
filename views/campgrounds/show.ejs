@@ -1,0 +1,136 @@
+<% layout('./layout/boilerplate')  %> 
+<link rel="stylesheet" href="/stylesheets/coinstar.css">
+
+
+
+<span><a href="/campgrounds">&larr;Back</a></span>
+<div class="row">
+    <div class="col-6">
+
+        <div id="campsCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
+            <div class="carousel-inner">
+                <% if(camp.images.length === 0) {%> 
+                    <img src="https://thumbs.dreamstime.com/b/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg" class="d-block w-100" alt="an image">
+                <% } else { %> 
+                    <% camp.images.forEach((img, i) => {%>
+                    <div class="carousel-item <%= i === 0  ? 'active' : ''%>" >
+                        <img src="<%= img.url %> " class="d-block w-100" alt="an image">
+                      </div>      
+                  <% }) %>
+                <% }  %> 
+            </div>
+
+            <% if(camp.images.length > 1) { %> 
+            <button class="carousel-control-prev" type="button" data-bs-target="#campsCarousel" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#campsCarousel" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+            <% } %> 
+          </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                
+            <h5 class="card-title"><%= camp.title %></h5>
+            <p class="card-text"><%= camp.description %></p>
+            </div>
+            <ul class="list-group list-group-flush">
+            <li class="list-group-item text--muted"><%= camp.location %></li>
+            <li class="list-group-item text">Created by: <%= camp.author.username %></li>
+                <li class="list-group-item">
+                    <div class="input-group">
+                        <span class="input-group-text" id='price-label'>$</span>
+                        <input type="text" id='price' class="form-control" aria-label="Amount (to the nearest dollar)" aria-describedby='price-label' name="campground[price]" value="<%= camp.price %>/night" disabled>
+                    </div>
+                </li>
+            </ul>
+
+            <% if(currUser && camp.author.equals(currUser.id)) { %> 
+            <div class="card-body">
+                <a class='btn btn-info card-link' href="/campgrounds/<%=camp._id%>/edit">Edit Camp</a>
+
+                <form class='d-inline' action="/campgrounds/<%=camp._id%>?_method=DELETE"
+                    method="POST">
+                    <button class='btn btn-danger'>Delete Camp</button>
+                </form>
+
+              </div>
+              <% } %> 
+
+        </div>
+    </div>
+
+    
+   
+    <div class="col-6">
+        <div id='map'></div>
+
+        <% if(currUser) { %> 
+        <form action="/campgrounds/<%=camp._id%>/reviews" method="POST" class='reqvalidate' novalidate>
+            <h2> Let us know about the Camp:</h2>
+            <div class="mb-3">
+            <fieldset class="starability-coinFlip">
+                <legend>Rating:</legend>
+                <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
+                <input type="radio" id="first-rate1" name="review[rating]" value="1" checked/>
+                <label for="first-rate1" title="Terrible">1 star</label>
+                <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                <label for="first-rate2" title="Not good">2 stars</label>
+                <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+                <label for="first-rate3" title="Average">3 stars</label>
+                <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                <label for="first-rate4" title="Very good">4 stars</label>
+                <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                <label for="first-rate5" title="Amazing">5 stars</label>
+              </fieldset>
+            </div>
+              
+            <div class="mb-3">
+                <label class='form-label' for="body">Review</label>
+                <textarea class='form-control' name="review[body]" id="body" cols="30" rows="4" required></textarea>
+                <div class="valid-feedback">
+                    Looks good!
+                  </div>
+            </div>
+           
+
+            <button class='btn btn-success mb-3'>Submit</button>
+        </form>
+        <% } %> 
+        
+            <% for(let review of camp.reviews) {%> 
+                <div class='card mb-3'>
+                    <div class="card-body">
+                        <h5 class="card-title"><%= review.author.username %> </h5>
+                            <p class="starability-result" data-rating="<%= review.rating %>">
+                                Rated: <%= review.rating %> stars
+                            </p>
+                        <p class="card-text"><%= review.body %></p>
+
+                         
+                      <% if(currUser && review.author.equals(currUser.id)) { %>
+                            <form action="/campgrounds/<%= camp.id %>/reviews/<%= review.id %>?_method=DELETE" method="POST">
+                            <button class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                         <% } %> 
+
+                    </div>         
+                </div>
+            <% } %> 
+    </div>
+    
+</div>
+
+
+<script>
+    const mapToken = '<%- process.env.MAPBOX_TOKEN %>'
+    const campMapData = <%- JSON.stringify(camp.geometry.coordinates)%>;
+    const campTitle = <%- JSON.stringify(camp.title) %>;
+    const campLoc = <%- JSON.stringify(camp.location) %>;
+</script>
+
+<script src="/javascripts/mapBox.js"></script>
