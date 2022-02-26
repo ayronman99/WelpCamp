@@ -1,10 +1,10 @@
 
 <% layout('./layout/boilerplate')  %> 
+<h2 class="text-center">View Camps from Maps!</h2>
+<div  id="cluster-map"></div>
 
-<div class="my-5" id="cluster-map"></div>
 
-
-    <h1>All Campgrounds</h1>
+    <h1 class="text-center">All Campgrounds</h1>
 
     <% if(campgrounds.length === 0) {%>
         <div class="mx-5 text-center">
@@ -16,7 +16,7 @@
         </div>
     <% } else { %> 
 
-        <ul>
+        <ul class="ul-adjust">
             <% for (let campground of campgrounds) { %> 
             <div class="card mb-3">
                 <div class="row">
